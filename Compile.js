@@ -11,7 +11,8 @@ class Compile {
 			// 2，编译==> 提取想要的元素节点 v-model 和文本节点{{}}
 			this.compile(fragment);
 
-			// 3, 
+			// 3, 把编译好的fragment塞回到页面里去
+			this.el.appendChild(fragment)
 		}
 	}
 	/* 专门写一些辅助的方法 */
@@ -33,25 +34,26 @@ class Compile {
 		Array.from(attr).forEach(attr => {
 			// 判断属性名是否包含v-
 			let attrName = attr.name;
-
+			let [, type] = attrName.split('-');
 			if (this.isDirective(attrName)) {
 				// 获取对应的值放到节点中
 				let expr = attr.value;
 				// node this.vm.$data expr
 				// todo ....
+				CompileUtil[type](node, this.vm, expr);
 			}
 		})
 	}
 	// 编译文本 {{}}
 	compileText(node) {
 		// 带{{}}
-		let text = node.textContent;
+		let expr = node.textContent;
 		// 匹配 {{}}
 		let reg = /\{\{([^}]+)\}\}/g;
-
-		if (reg.test(text)) {
+		if (reg.test(expr)) {
 			// node this.vm.$data expr
 			// todo .....
+			CompileUtil['text'](node, this.vm, expr)
 		}
 	}
 	//
@@ -85,3 +87,36 @@ class Compile {
 		return fragment; //内存中的节点
 	}
 }
+
+// 
+CompileUtil = {
+	getVal(vm, expr) { //获取实例上对应的数据
+		expr = expr.split('.'); // 将表达式根据"."进行拆分 类似data.message.first.a
+		return expr.reduce((prev, next) => {
+			return prev[next];
+		}, vm.$data); // 设置初始化的prev
+
+	},
+	getTextVal(vm, expr) { // 处理文本节点对应的数据
+		return expr.replace(/\{\{([^\}]+)\}\}/g, (...arguments) => {
+			return vm.$data[arguments[1]]
+		})
+	},
+	text(node, vm, expr) { // 文本处理
+		let updateFn = this.updater['textUpdater'];
+		updateFn && updateFn(node, this.getTextVal(vm, expr));
+	},
+	model(node, vm, expr) { // 输入框处理
+		let updateFn = this.updater['modelUpdater'];
+		updateFn && updateFn(node, this.getVal(vm, expr));
+	},
+	updater: {
+		textUpdater(node, value){
+			node.textContent = value
+		},
+		modelUpdater(node, value){
+			node.value = value;
+		}
+	}
+}
+
