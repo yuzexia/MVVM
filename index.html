@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>MVVM</title>
+</head>
+<body>
+	<div id="app">
+		<input type="text" v-model="message">
+		<div>
+			{{message}}
+		</div>
+		<ul>
+			<li>1</li>
+			<li>2</li>
+		</ul>
+		{{message}}
+	</div>
+	
+	<script src="Compile.js"></script>
+	<script src="Mvvm.js"></script>
+	<script>
+		let vm = new mvvm({
+			el: '#app',
+			data: {
+				message: 'hello world'
+			}
+		})
+	</script>
+</body>
+</html>
