@@ -99,7 +99,7 @@ CompileUtil = {
 	},
 	getTextVal(vm, expr) { // 处理文本节点对应的数据
 		return expr.replace(/\{\{([^\}]+)\}\}/g, (...arguments) => {
-			return vm.$data[arguments[1]]
+			return this.getVal(vm, arguments[1]);
 		})
 	},
 	text(node, vm, expr) { // 文本处理
