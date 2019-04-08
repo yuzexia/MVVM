@@ -15,7 +15,9 @@ class Watcher {
 	}
 	// 获取老值
 	get(){
+		Dep.target = this;
 		let value = this.getVal(this.vm, this.expr);
+		Dep.target = null;
 		return value;
 	}
 
