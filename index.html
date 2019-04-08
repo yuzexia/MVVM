@@ -16,14 +16,18 @@
 		</ul>
 		{{message}}
 	</div>
-	
+	<script src="Watcher.js"></script>
+	<script src="Observer.js"></script>
 	<script src="Compile.js"></script>
 	<script src="Mvvm.js"></script>
 	<script>
 		let vm = new mvvm({
 			el: '#app',
 			data: {
-				message: 'hello world'
+				message: 'hello world',
+				a: {
+					text: '1111'
+				}
 			}
 		})
 	</script>
